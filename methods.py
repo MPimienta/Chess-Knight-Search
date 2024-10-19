@@ -63,6 +63,25 @@ def get_max_number(M, N):
     else:
         return (M*N)/2
 
+def cost_function(path):
+    current_state = path[0]
+    final_state = path[-1]
+    rows, columns = np.shape(current_state)
+
+    current_placed_horses = 0
+    final_placed_horses = 0
+
+    for i in range(rows):
+        for j in range(columns):
+            if current_state[i][j] == 1:
+                current_placed_horses += 1
+            if final_state[i][j] == 1:
+                final_placed_horses += 1
+
+    cost = final_placed_horses - current_placed_horses
+
+    return cost
+
 def heuristic_function(board):
     rows, columns = np.shape(board)
     placed_horses = 0
