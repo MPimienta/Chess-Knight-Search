@@ -63,5 +63,21 @@ def get_max_number(M, N):
     else:
         return (M*N)/2
 
+def heuristic_function(board):
+    rows, columns = np.shape(board)
+    placed_horses = 0
+    valid_positions = 0
 
+    for i in range(rows):
+        for j in range(columns):
+            if is_valid_position(board, i, j):
+                valid_positions += 1
+            elif board[i][j] == 1:
+                placed_horses += 1
+
+    goal = get_max_number(rows, columns) - placed_horses
+
+    heuristic = abs(valid_positions - placed_horses)
+
+    return heuristic
 
