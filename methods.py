@@ -105,13 +105,16 @@ def cost_function(path):
 def heuristic_function(board):
     rows, columns = np.shape(board)
     valid_positions = 0
-
+    placed_horses = 0
     for i in range(rows):
         for j in range(columns):
             if is_valid_position(board, i, j):
                 valid_positions += 1
+            elif board[i][j] == 1:
+                placed_horses += 1
 
-    heuristic = -valid_positions
+    goal = get_max_number(rows, columns)
+    heuristic = abs(goal - placed_horses + valid_positions)
 
     return heuristic
 
@@ -180,4 +183,3 @@ def order_astar(old_paths, new_paths, g, h, *args, **kwargs):
 
     print("No se ha encontrado camino")
     return []
-
