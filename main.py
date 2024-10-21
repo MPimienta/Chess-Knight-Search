@@ -1,4 +1,4 @@
-import methods
+import dependent_functions
 
 board = methods.initial_state(4,5 )
 
