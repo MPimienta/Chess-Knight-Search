@@ -47,22 +47,52 @@ def cost_function(path):
 
     invalid_positions = 0
 
-    # Counts how many zeros there are in the board
+    # Counts how many zeros are in the board
     for i in range(rows):
         for j in range(columns):
             if not is_valid_position(current_state, i, j):
                 invalid_positions += 1
 
-    return current_nonplaced_horses
+    return current_nonplaced_horses * 10
 
-# Calculates the heuristic for the given state
+# Calculates the heuristic for the given state returning
+# how many more horses are needed to reach the solution
 def heuristic_function(board):
-    pass
+    return get_max_horse_number(board) - count_horses(board)
+
+def count_horses(board):
+    rows, columns = np.shape(board)
+    placed_horses = 0
+
+    # Counts how many horses are in the board
+    for i in range(rows):
+        for j in range(columns):
+            if not board[i][j]:
+                placed_horses += 1
+
+    return placed_horses
 
 # Determines if a given board is the final solution
 def is_solution(board):
+    return count_horses(board) == get_max_horse_number(board)
 
 
-    return True
+def get_max_horse_number(board):
+    M, N = np.shape(board)
+    max_number = max(M,N)
+    if M >= 3 and N >= 3:
+        return M*N/2
+    elif M == N:
+        return M*N
+    elif M == 1 or N == 1:
+        return max_number
+    else:
+        if max_number % 4 == 0:
+            return max_number
+        elif max_number % 2 == 0:
+            return max_number + 2
+        else:
+            return max_number + 1
+
 
 
