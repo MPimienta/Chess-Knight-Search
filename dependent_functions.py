@@ -35,6 +35,9 @@ def is_valid_position(board, i, j):
             if 0 <= di < rows and 0 <= dj < columns and board[di][dj] == 1: # If there is a horse on the calculated position
                 return False
 
+        if board[i][j]==1:
+            return False
+
     return True
 
 # Calculates the cost from the initial state to the current one on the given path
@@ -43,22 +46,32 @@ def cost_function(path):
         return 0
 
     current_state = path[0]
+    initial_state = path[-1]
     rows, columns = np.shape(current_state)
 
     invalid_positions = 0
+    initial_invalid_positions = 0
+    ous = 0
 
     # Counts how many zeros are in the board
     for i in range(rows):
         for j in range(columns):
-            if not is_valid_position(current_state, i, j):
+            if is_valid_position(current_state, i, j):
                 invalid_positions += 1
+            if is_valid_position(initial_state, i, j):
+                initial_invalid_positions += 1
+            if current_state[i][j] == 0:
+                ous += 1
 
-    return current_nonplaced_horses * 10
+    return abs(ous - invalid_positions)
 
 # Calculates the heuristic for the given state returning
 # how many more horses are needed to reach the solution
 def heuristic_function(board):
-    return get_max_horse_number(board) - count_horses(board)
+    max_horses = get_max_horse_number(board)
+    placed_horses = count_horses(board)
+    result = max_horses - placed_horses
+    return result
 
 def count_horses(board):
     rows, columns = np.shape(board)
@@ -67,7 +80,7 @@ def count_horses(board):
     # Counts how many horses are in the board
     for i in range(rows):
         for j in range(columns):
-            if not board[i][j]:
+            if board[i][j] == 1:
                 placed_horses += 1
 
     return placed_horses
@@ -80,9 +93,13 @@ def is_solution(board):
 def get_max_horse_number(board):
     M, N = np.shape(board)
     max_number = max(M,N)
+
     if M >= 3 and N >= 3:
-        return M*N/2
-    elif M == N:
+        if (M*N) % 2 == 0:
+            return int(M*N/2)
+        else:
+            return int(M*N/2) + 1
+    elif M == N or M == 0 or N == 0:
         return M*N
     elif M == 1 or N == 1:
         return max_number
