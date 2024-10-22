@@ -84,7 +84,7 @@ def print_camino(c, coste=None, final=False):
 
 
 def run():
-    board = df.initial_state(3,5)
+    board = df.initial_state(8,8)
     print(board)
     final_path = order_astar(board, expand, df.cost_function, df.heuristic_function)
     print("------------FINAL------------")

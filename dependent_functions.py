@@ -71,7 +71,7 @@ def heuristic_function(board):
     max_horses = get_max_horse_number(board)
     placed_horses = count_horses(board)
     result = max_horses - placed_horses
-    return result
+    return result * 10
 
 def count_horses(board):
     rows, columns = np.shape(board)
