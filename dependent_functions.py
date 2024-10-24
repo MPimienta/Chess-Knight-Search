@@ -49,29 +49,31 @@ def cost_function(path):
     initial_state = path[-1]
     rows, columns = np.shape(current_state)
 
-    invalid_positions = 0
-    initial_invalid_positions = 0
-    ous = 0
+    ous_current = 0
+    ous_initial = 0
 
     # Counts how many zeros are in the board
     for i in range(rows):
         for j in range(columns):
-            if is_valid_position(current_state, i, j):
-                invalid_positions += 1
-            if is_valid_position(initial_state, i, j):
-                initial_invalid_positions += 1
+            if initial_state[i][j] == 0:
+                ous_initial += 1
             if current_state[i][j] == 0:
-                ous += 1
+                ous_current += 1
 
-    return abs(ous - invalid_positions)
+    return abs(ous_initial - ous_current)
 
 # Calculates the heuristic for the given state returning
 # how many more horses are needed to reach the solution
 def heuristic_function(board):
-    max_horses = get_max_horse_number(board)
-    placed_horses = count_horses(board)
-    result = max_horses - placed_horses
-    return result * 10
+    rows, columns = np.shape(board)
+    valid_positions = 0
+
+    for i in range(rows):
+        for j in range(columns):
+            if is_valid_position(board, i, j):
+                valid_positions += 1
+
+    return valid_positions
 
 def count_horses(board):
     rows, columns = np.shape(board)
@@ -111,5 +113,14 @@ def get_max_horse_number(board):
         else:
             return max_number + 1
 
+# Checks if two boards are the same
+def equal_boards(board1, board2):
+    rows, columns = np.shape(board1)
 
+    for i in range(rows):
+        for j in range(columns):
+            if board1[i][j] != board2[i][j]:
+                return False
+
+    return True
 

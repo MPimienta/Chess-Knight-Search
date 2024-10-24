@@ -31,20 +31,12 @@ def prune(path_list):
 
 def path_in_list(board, states):
     for state in states:
-        if equal_boards(board, state):
+        if df.equal_boards(board, state):
             return True
 
     return False
 
-def equal_boards(board1, board2):
-    rows, columns = np.shape(board1)
 
-    for i in range(rows):
-        for j in range(columns):
-            if board1[i][j] != board2[i][j]:
-                return False
-
-    return True
 
 def order_astar(old_paths, new_paths, g, h, *args, **kwargs):
     cp = [[old_paths]]
@@ -59,16 +51,16 @@ def order_astar(old_paths, new_paths, g, h, *args, **kwargs):
         print(f'-- Paso {j} -- Caminos pendientes')
         for i, c in enumerate(cp):
             print(f'CP[{i}]: ')
-            print_camino(c, g(c) + h(c[0]))
+            print_camino(c, g(c) )
 
         expansion = new_paths(cp[0])
         print(f'-- Paso {j} -- Expandidos')
         for i, c in enumerate(expansion):
             print(f'E[{i}]: ')
-            print_camino(c, g(c) + h(c[0]))
+            print_camino(c, g(c) )
 
         unsrt = cp[1:] + expansion
-        unsrt.sort(key=lambda x: g(x) + h(x[0]))
+        unsrt.sort(key=lambda x: g(x) )
         cp = prune(unsrt)
         j+=1
     print("No se ha encontrado camino")
@@ -84,9 +76,8 @@ def print_camino(c, coste=None, final=False):
 
 
 def run():
-    board = df.initial_state(8,8)
+    board = df.initial_state(3,5)
     print(board)
     final_path = order_astar(board, expand, df.cost_function, df.heuristic_function)
     print("------------FINAL------------")
     print_camino(final_path, df.cost_function(final_path), final=True)
-    print(df.get_max_horse_number(board))
