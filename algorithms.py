@@ -1,10 +1,10 @@
-import dependent_functions as df
+import max_horses_in_board as hb
 import numpy as np
 
 # Expands the current board of the given path
 def expand(path):
     result = []
-    successors = df.get_successors(path[0])
+    successors = hb.get_successors(path[0])
 
     for successor in successors:
         result.append([successor] + path)
@@ -31,7 +31,7 @@ def prune(path_list):
 
 def path_in_list(board, states):
     for state in states:
-        if df.equal_boards(board, state):
+        if hb.equal_boards(board, state):
             return True
 
     return False
@@ -45,22 +45,22 @@ def order_astar(old_paths, new_paths, g, h, *args, **kwargs):
         if not cp:
             return []
 
-        if df.is_solution(cp[0][0]):
+        if hb.is_solution(cp[0][0]):
             return list(reversed(cp[0]))
 
         print(f'-- Paso {j} -- Caminos pendientes')
         for i, c in enumerate(cp):
             print(f'CP[{i}]: ')
-            print_camino(c, g(c) )
+            print_camino(c, g(c) + h(c[0]) )
 
         expansion = new_paths(cp[0])
         print(f'-- Paso {j} -- Expandidos')
         for i, c in enumerate(expansion):
             print(f'E[{i}]: ')
-            print_camino(c, g(c) )
+            print_camino(c, g(c) + h(c[0]) )
 
         unsrt = cp[1:] + expansion
-        unsrt.sort(key=lambda x: g(x) )
+        unsrt.sort(key=lambda x: g(x) + h(x[0]) )
         cp = prune(unsrt)
         j+=1
     print("No se ha encontrado camino")
@@ -76,8 +76,8 @@ def print_camino(c, coste=None, final=False):
 
 
 def run():
-    board = df.initial_state(3,5)
+    board = hb.initial_state(5, 5)
     print(board)
-    final_path = order_astar(board, expand, df.cost_function, df.heuristic_function)
+    final_path = order_astar(board, expand, hb.cost_function, hb.heuristic_function)
     print("------------FINAL------------")
-    print_camino(final_path, df.cost_function(final_path), final=True)
+    print_camino(final_path, hb.cost_function(final_path), final=True)

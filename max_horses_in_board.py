@@ -7,6 +7,8 @@ HORSE_MOVES = [(2, 1), (2, -1), (-2, 1), (-2, -1),
 def initial_state(M, N):
     return [[0 for i in range(N)]for i in range(M)]
 
+
+
 # Returns a list with the successors for the given state
 def get_successors(board):
     rows, columns = np.shape(board)
@@ -16,10 +18,13 @@ def get_successors(board):
         for j in range(columns):
             if is_valid_position(board, i, j):
                 new_board = copy_board(board)
-                new_board[i][j] = 1
+                place_horse(new_board, i, j)
                 boards.append(new_board)
 
     return boards
+
+def place_horse(board, i, j):
+    board[i][j] = 1
 
 # Returns a copy of the given board
 def copy_board(board):
@@ -29,51 +34,61 @@ def copy_board(board):
 def is_valid_position(board, i, j):
     rows, columns = np.shape(board)
 
-    if rows > i >= 0 and columns > j >= 0: # If the given position is within the board limits
-        for dx, dy in HORSE_MOVES:
-            di, dj = i + dx, j + dy # Calculates the possible moves for a horse from the given position
-            if 0 <= di < rows and 0 <= dj < columns and board[di][dj] == 1: # If there is a horse on the calculated position
-                return False
+    if rows > i >= 0 and columns > j >= 0:  # If the given position is within the board limits
+        if is_endangered_position(board, i, j):
+            return False
 
-        if board[i][j]==1:
+        if board[i][j] == 1:
             return False
 
     return True
 
+
+def is_endangered_position(board, i, j):
+    rows, columns = np.shape(board)
+
+    for dx, dy in HORSE_MOVES:
+        di, dj = i + dx, j + dy  # Calculates the possible moves for a horse from the given position
+        if 0 <= di < rows and 0 <= dj < columns and board[di][
+            dj] == 1:  # If there is a horse on the calculated position
+            return True
+
+    return False
+
 # Calculates the cost from the initial state to the current one on the given path
 def cost_function(path):
-    if len(path) == 0:
-        return 0
-
+    cost = 0
     current_state = path[0]
     initial_state = path[-1]
+    initial_invalid_positions = 0
+    current_invalid_positions = 0
     rows, columns = np.shape(current_state)
 
-    ous_current = 0
-    ous_initial = 0
-
-    # Counts how many zeros are in the board
     for i in range(rows):
         for j in range(columns):
-            if initial_state[i][j] == 0:
-                ous_initial += 1
-            if current_state[i][j] == 0:
-                ous_current += 1
+            if is_endangered_position(current_state, i, j):
+                current_invalid_positions += 1
+            if is_endangered_position(initial_state, i, j):
+                initial_invalid_positions += 1
 
-    return abs(ous_initial - ous_current)
+    cost = abs(current_invalid_positions - initial_invalid_positions)
+
+    return cost
 
 # Calculates the heuristic for the given state returning
 # how many more horses are needed to reach the solution
 def heuristic_function(board):
+    placed_horses = 0
     rows, columns = np.shape(board)
-    valid_positions = 0
 
     for i in range(rows):
         for j in range(columns):
-            if is_valid_position(board, i, j):
-                valid_positions += 1
+            if board[i][j] == 1:
+                placed_horses += 1
 
-    return valid_positions
+    heuristic = get_max_horse_number(board) - placed_horses
+    return heuristic
+
 
 def count_horses(board):
     rows, columns = np.shape(board)
@@ -89,7 +104,15 @@ def count_horses(board):
 
 # Determines if a given board is the final solution
 def is_solution(board):
-    return count_horses(board) == get_max_horse_number(board)
+    rows, columns = np.shape(board)
+
+    for i in range(rows):
+        for j in range(columns):
+            if is_valid_position(board, i, j):
+                return False
+                return
+
+    return True
 
 
 def get_max_horse_number(board):
