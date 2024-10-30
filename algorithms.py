@@ -13,7 +13,6 @@ def expand(path):
 
 # Eliminates paths that take to the same state but with a higher cost
 def prune(path_list):
-
     result = []
 
     if len(path_list) == 0:
@@ -29,6 +28,7 @@ def prune(path_list):
     return result
 
 
+# Returns True if board is in states
 def path_in_list(board, states):
     for state in states:
         if hb.equal_boards(board, state):
@@ -37,7 +37,7 @@ def path_in_list(board, states):
     return False
 
 
-
+# Algorithm for A*
 def order_astar(old_paths, new_paths, g, h, *args, **kwargs):
     cp = [[old_paths]]
     j = 0

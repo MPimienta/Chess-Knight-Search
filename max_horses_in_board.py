@@ -60,18 +60,18 @@ def cost_function(path):
     cost = 0
     current_state = path[0]
     initial_state = path[-1]
-    initial_invalid_positions = 0
-    current_invalid_positions = 0
+    initial_endangered_positions = 0
+    current_endangered_positions = 0
     rows, columns = np.shape(current_state)
 
     for i in range(rows):
         for j in range(columns):
             if is_endangered_position(current_state, i, j):
-                current_invalid_positions += 1
+                current_endangered_positions += 1
             if is_endangered_position(initial_state, i, j):
-                initial_invalid_positions += 1
+                initial_endangered_positions += 1
 
-    cost = abs(current_invalid_positions - initial_invalid_positions)
+    cost = abs(current_endangered_positions - initial_endangered_positions)
 
     return cost
 
@@ -110,11 +110,10 @@ def is_solution(board):
         for j in range(columns):
             if is_valid_position(board, i, j):
                 return False
-                return
 
     return True
 
-
+# Returns the max possible number of horses for the given configuration
 def get_max_horse_number(board):
     M, N = np.shape(board)
     max_number = max(M,N)
